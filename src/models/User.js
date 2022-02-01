@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
             },
 
             favorite:{
-            type: DataTypes.ARRAY(DataTypes.DECIMAL),
+            type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false,
             },
             // myArrayField: { 
