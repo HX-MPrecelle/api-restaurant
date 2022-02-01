@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
 
-    sequelize.define('restaurant', {
+    sequelize.define('Restaurant', {
         id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
         },
         personas_max: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
