@@ -36,20 +36,15 @@ const search = async () => {
             id: e.location_id,
             name: e.name,
             photo: e.photo.images.original.url,
+            email: e.email,
             rating: e.rating,
             cuisine: e.cuisine?.map(e => e.name),
-            address: e.address,
-            price: e.price,
             neighborhood: e.neighborhood_info?.map(e => e.name)
         }
     })
     
-    console.log(restaurantsBa);
+    // console.log(restaurantsBa);
     return restaurantsBa;
-}
-
-const detail = () => {
-
 }
 
 search();
