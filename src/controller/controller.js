@@ -47,8 +47,33 @@ const search = async () => {
     return restaurantsBa;
 }
 
-search();
+const getCuisines = async () => {
+  var id = await typehead();
+
+    var options = {
+        method: 'POST',
+        url: 'https://worldwide-restaurants.p.rapidapi.com/search',
+        headers: {
+          'x-rapidapi-host': 'worldwide-restaurants.p.rapidapi.com',
+          'x-rapidapi-key': 'daa46121d4msh1586432661d0f79p1e922bjsnd538bbbb9285'
+        },
+        data: {currency: 'ARS', location_id: id, limit: '100', language: 'es_AR'}
+      };
+    
+    var infoApi = await axios.request(options);
+    var data = infoApi.data.results.data?.map(e => e.cuisine?.map(c => c.name))
+    var types = [];
+    for (const array of data) {
+      array.forEach(t => types.push(t))
+    }
+    var typesCuisine = [...new Set(types)]
+    // console.log(typesCuisine);
+    return typesCuisine;
+}
+
 
 module.exports = {
-    typehead
+    typehead,
+    search,
+    getCuisines
 }
