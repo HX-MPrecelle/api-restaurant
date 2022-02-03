@@ -93,7 +93,6 @@ const pushCuisinesDb = async () => {
 const getNeighborhood = async () => {
 
   var id = await typehead();
-
     var options = {
         method: 'POST',
         url: 'https://worldwide-restaurants.p.rapidapi.com/search',
@@ -103,7 +102,6 @@ const getNeighborhood = async () => {
         },
         data: {currency: 'ARS', location_id: id, limit: '100', language: 'es_AR'}
       };
-    
     var infoApi = await axios.request(options);
     var data = infoApi.data.results.data?.map(e => e.neighborhood_info?.map(n => n.name))
     var neighborhoods = [];
