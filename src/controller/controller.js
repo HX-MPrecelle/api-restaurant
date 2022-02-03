@@ -1,4 +1,5 @@
 var axios = require("axios").default;
+const { Type } = require('../db');
 
 const typehead = async () => {
     var options = {
@@ -36,24 +37,61 @@ const search = async () => {
             id: e.location_id,
             name: e.name,
             photo: e.photo.images.original.url,
+            email: e.email,
             rating: e.rating,
             cuisine: e.cuisine?.map(e => e.name),
-            address: e.address,
-            price: e.price,
             neighborhood: e.neighborhood_info?.map(e => e.name)
         }
     })
     
-    console.log(restaurantsBa);
+    // console.log(restaurantsBa);
     return restaurantsBa;
 }
 
-const detail = () => {
+const getCuisines = async () => {
+  var id = await typehead();
 
+    var options = {
+        method: 'POST',
+        url: 'https://worldwide-restaurants.p.rapidapi.com/search',
+        headers: {
+          'x-rapidapi-host': 'worldwide-restaurants.p.rapidapi.com',
+          'x-rapidapi-key': 'daa46121d4msh1586432661d0f79p1e922bjsnd538bbbb9285'
+        },
+        data: {currency: 'ARS', location_id: id, limit: '100', language: 'es_AR'}
+      };
+    
+    var infoApi = await axios.request(options);
+    var data = infoApi.data.results.data?.map(e => e.cuisine?.map(c => c.name))
+    var types = [];
+    for (const array of data) {
+      array.forEach(t => types.push(t))
+    }
+    var typesCuisine = [...new Set(types)]
+    // console.log(typesCuisine);
+    return typesCuisine;
 }
 
-search();
+
+const pushCuisinesDb = async () => {
+  var typesCuisine = await getCuisines();
+
+  typesCuisine.forEach(type => {
+    Type.findOrCreate({
+      where: {
+        name: type,
+      }
+    })
+  });
+  var allTypes = await Type.findAll();
+  console.log(allTypes);
+  return allTypes;
+}
+
 
 module.exports = {
-    typehead
+    typehead,
+    search,
+    getCuisines,
+    pushCuisinesDb
 }
