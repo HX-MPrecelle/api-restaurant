@@ -1,4 +1,5 @@
 var axios = require("axios").default;
+const { Type } = require('../db');
 
 const typehead = async () => {
     var options = {
@@ -72,8 +73,25 @@ const getCuisines = async () => {
 }
 
 
+const pushCuisinesDb = async () => {
+  var typesCuisine = await getCuisines();
+
+  typesCuisine.forEach(type => {
+    Type.findOrCreate({
+      where: {
+        name: type,
+      }
+    })
+  });
+  var allTypes = await Type.findAll();
+  console.log(allTypes);
+  return allTypes;
+}
+
+
 module.exports = {
     typehead,
     search,
-    getCuisines
+    getCuisines,
+    pushCuisinesDb
 }
