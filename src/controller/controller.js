@@ -85,7 +85,7 @@ const pushCuisinesDb = async () => {
     })
   });
   var allTypes = await Type.findAll();
-  console.log(allTypes);
+  // console.log(allTypes);
   return allTypes;
 }
 
@@ -99,7 +99,7 @@ const getRestaurantsDb = async () => {
       }
     }
   });
-  console.log(restaurants);
+  // console.log(restaurants);
   return restaurants;
 }
 
@@ -107,11 +107,9 @@ const getAllRestaurants = async () => {
   let api = await search();
   let db = await getRestaurantsDb();
   let allRestaurants = api.concat(db);
-  console.log(allRestaurants);
+  // console.log(allRestaurants);
   return allRestaurants;
 }
-
-getAllRestaurants();
 
 module.exports = {
     typehead,
