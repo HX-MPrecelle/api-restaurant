@@ -133,6 +133,7 @@ const getNeighborhood = async () => {
     }
     var neighborhood = [...new Set(neighborhoods)]
     // console.log(neighborhood);
+    console.log(neighborhood);
     return neighborhood;
 }
 
