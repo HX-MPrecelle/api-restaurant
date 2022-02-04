@@ -38,16 +38,19 @@ const search = async () => {
             name: e.name,
             photo: e.photo.images.original.url,
             email: e.email,
-            rating: e.rating,
+            rating: e.rating.charAt(0),
             cuisine: e.cuisine?.map(e => e.name),
             neighborhood: e.neighborhood_info?.map(e => e.name),
-            price: e.price_level //primer valor del string
+            price: e.price_level.split(" ", 1),
+            address: e.address,
+            description: e.description
         }
     })
     
-    // console.log(restaurantsBa);
+    console.log(restaurantsBa);
     return restaurantsBa;
 }
+search()
 
 const getCuisines = async () => {
   var id = await typehead();
