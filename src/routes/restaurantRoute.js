@@ -1,10 +1,10 @@
 const express = require('express');
-const { search, getAllRestaurants } = require('../controller/controller');
+const { getAllRestaurants } = require('../controller/controller');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    const {name} = req.query;
+    const { name } = req.query;
     const allRestaurants = await getAllRestaurants();
     // console.log(allRestaurants);
     try {
@@ -17,6 +17,19 @@ router.get('/', async (req, res) => {
     } catch (e) {
         return res.status(404).send('Service unvailable');
     }
-})
+});
+
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    const allRestaurants = await getAllRestaurants();
+    try {
+        if (id) {
+            let restaurant = allRestaurants.filter(e => e.id == id);
+            restaurant.length ? res.status(200).send(restaurant) : res.status(404).send('Restaurant not found');
+        }
+    } catch (e) {
+        console.log(e);
+    }
+});
 
 module.exports = router;
