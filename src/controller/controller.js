@@ -2,9 +2,6 @@ const axios = require("axios").default;
 const  {Reserve, Restaurant, Review, User, Type }  = require('../db.js');
 const Sequelize = require("sequelize");
 
-
-
-
 const typehead = async () => {
     var options = {
         method: 'POST',
@@ -41,15 +38,14 @@ const search = async () => {
             id: e.location_id,
             name: e.name,
             photo: e.photo.images.original.url,
+            email: e.email,
             rating: e.rating,
             cuisine: e.cuisine?.map(e => e.name),
-            address: e.address,
-            price: e.price,
             neighborhood: e.neighborhood_info?.map(e => e.name)
         }
     })
     
-    console.log(restaurantsBa);
+    // console.log(restaurantsBa);
     return restaurantsBa;
 }
 
@@ -81,18 +77,6 @@ const pushCuisinesDb = async () => {
   console.log(allTypes);
   return allTypes;
 };
-
-// const getDB = async ()=> {
-//   return await Restaurant.findAll({
-//       include: {
-//           model: Reserve, Review, User, Type,
-//           attributes: ["name"],
-//           through: {
-//               attributes: [],
-//           }
-//       }
-//   })
-// };
 
 const getCuisines = async () => {
   var id = await typehead();
@@ -166,12 +150,11 @@ const restaurantByID = async(req, res) => {
 
 // search();
 // getDB()
-pushCuisinesDb()
+// pushCuisinesDb()
 // AllInfo()
 module.exports = {
     typehead,
-    restaurantByID,
-    restaurantName,
-  
-
-};
+    search,
+    getCuisines,
+    pushCuisinesDb
+}
