@@ -1,5 +1,5 @@
 var axios = require("axios").default;
-const { Type } = require('../db');
+const { Restaurant, Type } = require('../db');
 
 const typehead = async () => {
     var options = {
@@ -40,7 +40,8 @@ const search = async () => {
             email: e.email,
             rating: e.rating,
             cuisine: e.cuisine?.map(e => e.name),
-            neighborhood: e.neighborhood_info?.map(e => e.name)
+            neighborhood: e.neighborhood_info?.map(e => e.name),
+            price: e.price_level //primer valor del string
         }
     })
     
@@ -74,7 +75,7 @@ const getCuisines = async () => {
 
 
 const pushCuisinesDb = async () => {
-  var typesCuisine = await getCuisines();
+  let typesCuisine = await getCuisines();
 
   typesCuisine.forEach(type => {
     Type.findOrCreate({
@@ -88,10 +89,35 @@ const pushCuisinesDb = async () => {
   return allTypes;
 }
 
+const getRestaurantsDb = async () => {
+  let restaurants = await Restaurant.findAll({
+    include: {
+      model: Type,
+      attributes: ['name'],
+      through: {
+        attributes: []
+      }
+    }
+  });
+  console.log(restaurants);
+  return restaurants;
+}
+
+const getAllRestaurants = async () => {
+  let api = await search();
+  let db = await getRestaurantsDb();
+  let allRestaurants = api.concat(db);
+  console.log(allRestaurants);
+  return allRestaurants;
+}
+
+getAllRestaurants();
 
 module.exports = {
     typehead,
     search,
     getCuisines,
-    pushCuisinesDb
+    pushCuisinesDb,
+    getRestaurantsDb,
+    getAllRestaurants
 }
