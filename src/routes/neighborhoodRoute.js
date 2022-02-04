@@ -1,5 +1,5 @@
 const express = require('express');
-const { Neighborhood } = require('../models/Neighborhood');
+const { Neighborhood } = require('../db');
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const neighborhood_data = ['Chacarita', 'Paternal', 'Villa Crespo','Villa del Pa
 router.get('/', async (req, res) => {
     var neighborhoods = neighborhood_data;
     try {
-        neighborhoods.forEach(n => {
+        neighborhoods?.forEach(n => {
             Neighborhood.findOrCreate({
                 where: {
                     name: n,
