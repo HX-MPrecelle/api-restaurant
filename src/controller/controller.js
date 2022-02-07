@@ -47,7 +47,7 @@ const search = async () => {
         }
     })
     
-    console.log(restaurantsBa);
+    // console.log(restaurantsBa);
     return restaurantsBa;
 }
 
