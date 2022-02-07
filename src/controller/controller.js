@@ -50,7 +50,6 @@ const search = async () => {
     console.log(restaurantsBa);
     return restaurantsBa;
 }
-search()
 
 const getCuisines = async () => {
   var id = await typehead();
@@ -75,7 +74,6 @@ const getCuisines = async () => {
     // console.log(typesCuisine);
     return typesCuisine;
 }
-
 
 const pushCuisinesDb = async () => {
   let typesCuisine = await getCuisines();
@@ -113,8 +111,6 @@ const getAllRestaurants = async () => {
   // console.log(allRestaurants);
   return allRestaurants;
 }
-
-// pushCuisinesDb()
 
 const getNeighborhood = async () => {
 
