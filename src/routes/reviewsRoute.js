@@ -14,19 +14,21 @@ router.post("/", async (req, res) => {
           id: id,
         },
       });
-      console.log(restaurant);
+      console.log(restaurant[0].dataValues);
 
       const user = await User.findAll({
         where: {
           email: email,
         },
       });
-      console.log(user);
+      console.log(user[0].dataValues);
 
       if (restaurant && user) {
         const review = await Review.create({
           rating,
           description,
+          UserId: user[0].dataValues.id,
+          RestaurantId: restaurant[0].dataValues.id
         });
         console.log(review);
         return res.status(200).send(review);

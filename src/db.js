@@ -34,8 +34,10 @@ const { Reserve, Restaurant, Review, User, Type, Neighborhood } = sequelize.mode
 // Product.hasMany(Reviews);
 Restaurant.belongsToMany(Type, {through: 'restaurant_type'});
 Restaurant.belongsToMany(Neighborhood, {through: 'restaurant_neighborhood'});
+Review.belongsTo(Restaurant);
 Restaurant.hasMany(Review);
 Restaurant.hasMany(Reserve);
+Review.belongsTo(User);
 User.hasMany(Review);
 User.hasMany(Reserve);
 
