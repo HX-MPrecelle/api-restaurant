@@ -3,6 +3,7 @@ const restaurantRoute = require('./restaurantRoute');
 const neighborhoodRoute = require('./neighborhoodRoute');
 const userRoute = require('./userRoute');
 const cuisinesRoute = require('./cuisinesRoute');
+const loginRoute = require('./loginRoute');
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 const router = Router();
@@ -13,5 +14,6 @@ router.use('/restaurant', restaurantRoute)
 router.use('/user', userRoute)
 router.use('/neighborhood', neighborhoodRoute)
 router.use('/cuisines', cuisinesRoute)
+router.use('/login', loginRoute)
 
 module.exports = router;
