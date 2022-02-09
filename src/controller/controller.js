@@ -36,18 +36,35 @@ const search = async () => {
         return {
             id: e.location_id,
             name: e.name,
-            photo: e.photo.images.original.url,
-            email: e.email,
+            photo: e.photo.images.original.url ? e.photo.images.original.url : e.photo.images.large.url,
+            email: e.email ? e.email : ' - ',
             rating: e.rating.charAt(0),
             cuisine: e.cuisine?.map(e => e.name),
             neighborhood: e.neighborhood_info?.map(e => e.name),
             price: e.price_level.split(" ", 1),
             address: e.address,
-            description: e.description
+            description: e.description,
         }
     })
+
+    restaurantsBa?.forEach(r => {
+      Restaurant.findOrCreate({
+        where: {
+          name: r.name,
+          photo: r.photo,
+          email: r.email,
+          rating: r.rating,
+          cuisine: r.cuisine,
+          neighborhood_info: r.neighborhood,
+          price: r.price[0],
+          address: r.address,
+          description: r.description,
+          personas_max: 20
+        },
+      });
+    })
     
-    console.log(restaurantsBa);
+    // console.log(restaurantsBa);
     return restaurantsBa;
 }
 
@@ -105,11 +122,9 @@ const getRestaurantsDb = async () => {
 }
 
 const getAllRestaurants = async () => {
-  let api = await search();
   let db = await getRestaurantsDb();
-  let allRestaurants = api.concat(db);
-  // console.log(allRestaurants);
-  return allRestaurants;
+  // console.log(db);
+  return db;
 }
 
 const getNeighborhood = async () => {
