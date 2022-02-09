@@ -44,6 +44,7 @@ const search = async () => {
             price: e.price_level.split(" ", 1),
             address: e.address,
             description: e.description,
+            personas_max: 20
         }
     })
 
@@ -59,7 +60,7 @@ const search = async () => {
           price: r.price[0],
           address: r.address,
           description: r.description,
-          personas_max: 20
+          personas_max: r.personas_max
         },
       });
     })
