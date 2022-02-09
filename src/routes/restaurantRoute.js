@@ -1,17 +1,8 @@
 const express = require("express");
-const {  search,getAllRestaurants } = require("../controller/controller");
+const { getAllRestaurants } = require("../controller/controller");
 const { Restaurant, Type } = require("../db");
 
 const router = express.Router();
-
-router.post('/', async (req, res) => {
-    try {
-        const restaurants = await search();
-        res.status(200).send(restaurants);
-    } catch (e) {
-        console.log(e);
-    }
-})
 
 router.get("/", async (req, res) => {
   const { name } = req.query;
