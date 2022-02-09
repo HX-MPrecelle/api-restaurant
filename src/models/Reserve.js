@@ -14,6 +14,10 @@ module.exports = (sequelize) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      time: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       pax: {
         type: DataTypes.INTEGER,
         allowNull: false,
