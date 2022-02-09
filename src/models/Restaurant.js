@@ -50,6 +50,10 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      owner: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
     },
     { timestamp: false }
   );
