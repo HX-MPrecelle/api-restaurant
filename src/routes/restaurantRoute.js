@@ -105,7 +105,7 @@ router.post("/create", async (req, res) => {
   }
 });
 
-router.put("/update", async (req, res) => {
+router.put("/", async (req, res) => {
   //id de restaurant, email de usuario loggeado
   const {
     idRestaurant,
@@ -161,6 +161,30 @@ router.put("/update", async (req, res) => {
     }
   } catch (e) {
     res.status(404).send({ message: "Petición inválida" });
+  }
+});
+
+router.delete("/", async (req, res) => {
+  const { emailOwner, idRestaurant } = req.body;
+
+  try {
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id: idRestaurant,
+        owner: emailOwner,
+      },
+    });
+
+    // console.log('Soy restaurant', restaurant);
+    if (restaurant) {
+      await restaurant.destroy();
+      return res.status(200).send({message: 'Restaurant eliminado con éxito'});
+    }
+    return res
+      .status(400)
+      .send({ message: "Solo el dueño puede eliminar el restaurant" });
+  } catch (e) {
+    return res.status(404).send({ message: "Petición inválida" });
   }
 });
 
