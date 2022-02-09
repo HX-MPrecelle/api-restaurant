@@ -14,28 +14,41 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      address: {
+      photo: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      neighborhood_info: {
+      email: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
+      },
+      rating: {
+        type: DataTypes.STRING,
+        allowNull: true, 
       },
       cuisine: {
         type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
       },
-      email: {
+      neighborhood_info: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+      },
+      price: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      address: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       personas_max: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      photo: {
-        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     { timestamp: false }
