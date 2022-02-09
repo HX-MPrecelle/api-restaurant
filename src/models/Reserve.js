@@ -11,14 +11,14 @@ module.exports = (sequelize) => {
         primaryKey: true,
       },
       date: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         allowNull: false,
       },
-      hour: {
-        type: DataTypes.ENUM("ALMUERZO", "CENA"),
+      time: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      personas_cant: {
+      pax: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
