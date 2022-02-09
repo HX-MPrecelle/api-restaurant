@@ -122,11 +122,9 @@ const getRestaurantsDb = async () => {
 }
 
 const getAllRestaurants = async () => {
-  let api = await search();
   let db = await getRestaurantsDb();
-  let allRestaurants = api.concat(db);
-  // console.log(allRestaurants);
-  return allRestaurants;
+  // console.log(db);
+  return db;
 }
 
 const getNeighborhood = async () => {
