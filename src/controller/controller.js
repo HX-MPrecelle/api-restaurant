@@ -123,6 +123,7 @@ const getRestaurantsDb = async () => {
 }
 
 const getAllRestaurants = async () => {
+  await search();
   let db = await getRestaurantsDb();
   // console.log(db);
   return db;
