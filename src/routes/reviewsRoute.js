@@ -3,9 +3,57 @@ const { Restaurant, User, Review } = require("../db");
 
 const router = express.Router();
 
-router.post("/restaurant", async (req, res) => {
+router.post("/", async (req, res) => {
+  //email de usuario, rating y description de review, id de restaurant
+  const { author, rating, description, id } = req.body;
+
+  try {
+    if (author && rating && description && id) {
+      if (rating === '1' || rating === '2' || rating === '3' || rating === '4' || rating === '5') {
+        const restaurant = await Restaurant.findAll({
+          where: {
+            id: id,
+          },
+        });
+        //   console.log(restaurant[0].dataValues);
+  
+        const user = await User.findAll({
+          where: {
+            email: author,
+          },
+        });
+        //   console.log(user[0].dataValues);
+  
+        if (restaurant && user) {
+          const review = await Review.create({
+            rating,
+            description,
+            UserId: user[0].dataValues.id,
+            RestaurantId: restaurant[0].dataValues.id,
+          });
+          // console.log(review);
+          return res.status(200).send(review);
+        } else {
+          return res
+            .status(400)
+            .json({ message: "Usuario/Restaurant no existe" });
+        }
+      } else {
+        return res.status(400).json({ message: "El rating debe ser un número entero entre 1 y 5" });
+      }
+
+
+    } else {
+      return res.status(400).json({ message: "Datos incompletos" });
+    }
+  } catch (e) {
+    return res.status(400).json({ message: "Petición inválida" });
+  }
+});
+
+router.get("/:id", async (req, res) => {
   //id de restaurant
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
     if (id) {
@@ -32,9 +80,9 @@ router.post("/restaurant", async (req, res) => {
   }
 });
 
-router.post("/user", async (req, res) => {
+router.get("/user/:id", async (req, res) => {
   //id de usuario
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
     if (id) {
@@ -61,46 +109,5 @@ router.post("/user", async (req, res) => {
   }
 });
 
-router.post("/create", async (req, res) => {
-  //email de usuario, rating y description de review, id de restaurant
-  const { email, rating, description, id } = req.body;
-
-  try {
-    if (email && rating && description && id) {
-      const restaurant = await Restaurant.findAll({
-        where: {
-          id: id,
-        },
-      });
-      //   console.log(restaurant[0].dataValues);
-
-      const user = await User.findAll({
-        where: {
-          email: email,
-        },
-      });
-      //   console.log(user[0].dataValues);
-
-      if (restaurant && user) {
-        const review = await Review.create({
-          rating,
-          description,
-          UserId: user[0].dataValues.id,
-          RestaurantId: restaurant[0].dataValues.id,
-        });
-        // console.log(review);
-        return res.status(200).send(review);
-      } else {
-        return res
-          .status(400)
-          .send({ message: "Usuario/Restaurant no existe" });
-      }
-    } else {
-      return res.status(400).send({ message: "Petición inválida" });
-    }
-  } catch (e) {
-    console.log(e);
-  }
-});
 
 module.exports = router;
