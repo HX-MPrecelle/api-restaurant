@@ -48,16 +48,11 @@ router.post("/create", async (req, res) => {
     email,
     personas_max,
     photo,
+    description,
+    price,
     owner,
   } = req.body;
   try {
-    const restaurantOwner = await User.findAll({
-      where: {
-        email: owner,
-      },
-    });
-    // console.log(restaurantOwner);
-
     if (name && email) {
       const allRestaurants = await getAllRestaurants();
       const restaurantName = allRestaurants.filter(
@@ -75,7 +70,9 @@ router.post("/create", async (req, res) => {
           email,
           personas_max,
           photo,
-          owner: restaurantOwner[0].dataValues.email,
+          description,
+          price,
+          owner,
         });
 
         const cuisinesType = await Type.findAll({
@@ -178,7 +175,9 @@ router.delete("/", async (req, res) => {
     // console.log('Soy restaurant', restaurant);
     if (restaurant) {
       await restaurant.destroy();
-      return res.status(200).send({message: 'Restaurant eliminado con éxito'});
+      return res
+        .status(200)
+        .send({ message: "Restaurant eliminado con éxito" });
     }
     return res
       .status(400)
