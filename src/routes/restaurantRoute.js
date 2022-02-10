@@ -1,6 +1,6 @@
 const express = require("express");
 const { getAllRestaurants } = require("../controller/controller");
-const { Restaurant, Type } = require("../db");
+const { Restaurant, Type, User } = require("../db");
 
 const router = express.Router();
 
@@ -48,8 +48,16 @@ router.post("/create", async (req, res) => {
     email,
     personas_max,
     photo,
+    owner,
   } = req.body;
   try {
+    const restaurantOwner = await User.findAll({
+      where: {
+        email: owner,
+      },
+    });
+    // console.log(restaurantOwner);
+
     if (name && email) {
       const allRestaurants = await getAllRestaurants();
       const restaurantName = allRestaurants.filter(
@@ -67,6 +75,7 @@ router.post("/create", async (req, res) => {
           email,
           personas_max,
           photo,
+          owner: restaurantOwner[0].dataValues.email,
         });
 
         const cuisinesType = await Type.findAll({
@@ -93,6 +102,89 @@ router.post("/create", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
+  }
+});
+
+router.put("/", async (req, res) => {
+  //id de restaurant, email de usuario loggeado
+  const {
+    idRestaurant,
+    emailOwner,
+    newName,
+    newAddress,
+    newNeighborhood,
+    newCuisine,
+    newEmail,
+    newPersonas_max,
+    newPhoto,
+    newDescription,
+    newPrice,
+  } = req.body;
+
+  try {
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id: idRestaurant,
+        owner: emailOwner,
+      },
+    });
+    if (restaurant) {
+      const newRestaurant = await restaurant.update(
+        {
+          name: newName ? newName : restaurant.dataValues.name,
+          address: newAddress ? newAddress : restaurant.dataValues.address,
+          neighborhood_info: newNeighborhood
+            ? newNeighborhood
+            : restaurant.dataValues.neighborhood_info,
+          cuisine: newCuisine ? newCuisine : restaurant.dataValues.cuisine,
+          email: newEmail ? newEmail : restaurant.dataValues.email,
+          personas_max: newPersonas_max
+            ? newPersonas_max
+            : restaurant.dataValues.personas_max,
+          photo: newPhoto ? newPhoto : restaurant.dataValues.photo,
+          description: newDescription
+            ? newDescription
+            : restaurant.dataValues.description,
+          price: newPrice ? newPrice : restaurant.dataValues.price,
+        },
+        {
+          where: {
+            id: idRestaurant,
+          },
+        }
+      );
+      res.status(200).send(newRestaurant);
+    } else {
+      res.status(400).send({
+        message: "Solo el dueño puede modificar los datos del restaurant",
+      });
+    }
+  } catch (e) {
+    res.status(404).send({ message: "Petición inválida" });
+  }
+});
+
+router.delete("/", async (req, res) => {
+  const { emailOwner, idRestaurant } = req.body;
+
+  try {
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id: idRestaurant,
+        owner: emailOwner,
+      },
+    });
+
+    // console.log('Soy restaurant', restaurant);
+    if (restaurant) {
+      await restaurant.destroy();
+      return res.status(200).send({message: 'Restaurant eliminado con éxito'});
+    }
+    return res
+      .status(400)
+      .send({ message: "Solo el dueño puede eliminar el restaurant" });
+  } catch (e) {
+    return res.status(404).send({ message: "Petición inválida" });
   }
 });
 
