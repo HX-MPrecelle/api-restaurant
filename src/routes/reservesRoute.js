@@ -9,45 +9,53 @@ router.post("/", async (req, res) => {
 
   try {
     if (email && date && time && pax && id) {
-      const restaurant = await Restaurant.findAll({
+      const restaurant = await Restaurant.findOne({
         where: {
           id: id,
         },
       });
-      //   console.log(restaurant[0].dataValues);
+      //   console.log(restaurant.dataValues);
 
-      const user = await User.findAll({
+      const user = await User.findOne({
         where: {
           email: email,
         },
       });
-      //   console.log(user[0].dataValues);
+      //   console.log(user.dataValues);
 
       if (restaurant && user) {
-        // console.log(restaurant[0].dataValues.personas_max);
-        if (restaurant[0].dataValues.personas_max >= pax) {
-          const reserve = await Reserve.create({
-            date,
-            time,
-            pax,
-            UserId: user[0].dataValues.id,
-            RestaurantId: restaurant[0].dataValues.id,
-          });
-          await Restaurant.update(
-            {
-              personas_max: restaurant[0].dataValues.personas_max - pax,
-            },
-            {
-              where: {
-                id: restaurant[0].dataValues.id,
+        // console.log(restaurant);
+        // console.log(user);
+        if (!user.email === "API") {
+          if (restaurant.dataValues.personas_max >= pax) {
+            //Mercadopago
+            const reserve = await Reserve.create({
+              date,
+              time,
+              pax,
+              UserId: user.dataValues.id,
+              RestaurantId: restaurant.dataValues.id,
+            });
+            await Restaurant.update(
+              {
+                personas_max: restaurant.dataValues.personas_max - pax,
               },
-            }
-          );
-          // console.log(restaurant[0].dataValues);
-          return res.status(200).send(reserve);
+              {
+                where: {
+                  id: restaurant.dataValues.id,
+                },
+              }
+            );
+            // console.log(restaurant.dataValues);
+            return res.status(200).send(reserve);
+          } else {
+            return res.status(400).json({
+              message: `Solo nos quedan ${restaurant.dataValues.personas_max} lugares disponibles`,
+            });
+          }
         } else {
           return res.status(400).json({
-            message: `Solo nos quedan ${restaurant[0].dataValues.personas_max} lugares disponibles`,
+            message: `No se le pueden hacer reservas a este Restaurant`,
           });
         }
       } else {
