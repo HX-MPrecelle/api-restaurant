@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       photo: {
-        type: DataTypes.STRING,
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
       },
       email: {
@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
       },
       rating: {
         type: DataTypes.STRING,
-        allowNull: true, 
+        allowNull: true,
       },
       cuisine: {
         type: DataTypes.ARRAY(DataTypes.STRING),
@@ -49,6 +49,10 @@ module.exports = (sequelize) => {
       personas_max: {
         type: DataTypes.INTEGER,
         allowNull: true,
+      },
+      owner: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
     },
     { timestamp: false }
