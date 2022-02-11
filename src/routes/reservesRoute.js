@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
       if (restaurant && user) {
         // console.log(restaurant);
         // console.log(user);
-        if (!user.email === "API") {
+        if (user.email !== "API") {
           if (restaurant.dataValues.personas_max >= pax) {
             //Mercadopago
             const reserve = await Reserve.create({
@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
           }
         } else {
           return res.status(400).json({
-            message: `No se le pueden hacer reservas a este Restaurant`,
+            message: 'No se le pueden hacer reservas a este Restaurant',
           });
         }
       } else {

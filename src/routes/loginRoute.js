@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
   if (!email || !password) {
     return res
       .status(400)
-      .send({ message: "Por favor, ingrese complete los campos" });
+      .send({ message: "Por favor, complete los campos" });
   }
 
   try {
@@ -32,13 +32,13 @@ router.post("/", async (req, res) => {
       } else {
         return res
           .status(400)
-          .json({ message: "Las contraseñas no coinciden" });
+          .json({ message: "Contraseña incorrecta" });
       }
     } else {
       return res.status(404).json({ message: "El usuario no existe" });
     }
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return res.status(404).json({ message: "Respuesta inválida" });
   }
 });
