@@ -1,5 +1,5 @@
 const express = require("express");
-const { User } = require("../db");
+const { User, Restaurant } = require("../db");
 const bcrypt = require("bcryptjs");
 
 const router = express.Router();
@@ -45,6 +45,39 @@ router.post("/", async (req, res) => {
     return res.status(200).send(newUser);
   } catch (e) {
     console.log(e);
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (id) {
+      const user = await User.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (user) {
+        const restaurants = await Restaurant.findAll({
+          where: {
+            owner: user.email,
+          },
+        });
+        return res.status(200).send(restaurants);
+      } else {
+        return res.status(400).json({ message: "El usuario no existe" });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Se necesita un ID de usuario para poder encontrar sus restaurants",
+        });
+    }
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
   }
 });
 
