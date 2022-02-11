@@ -10,14 +10,14 @@ router.post("/", async (req, res) => {
   try {
     if (author && rating && description && id) {
       if (rating === '1' || rating === '2' || rating === '3' || rating === '4' || rating === '5') {
-        const restaurant = await Restaurant.findAll({
+        const restaurant = await Restaurant.findOne({
           where: {
             id: id,
           },
         });
         //   console.log(restaurant[0].dataValues);
   
-        const user = await User.findAll({
+        const user = await User.findOne({
           where: {
             email: author,
           },
@@ -28,8 +28,9 @@ router.post("/", async (req, res) => {
           const review = await Review.create({
             rating,
             description,
-            UserId: user[0].dataValues.id,
-            RestaurantId: restaurant[0].dataValues.id,
+            user: user.dataValues.username,
+            UserId: user.dataValues.id,
+            RestaurantId: restaurant.dataValues.id,
           });
           // console.log(review);
           return res.status(200).send(review);
