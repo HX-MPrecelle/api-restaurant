@@ -112,6 +112,7 @@ router.put("/:id", async (req, res) => {
     owner,
     name,
     address,
+    rating,
     neighborhood_info,
     cuisine,
     email,
@@ -133,6 +134,7 @@ router.put("/:id", async (req, res) => {
         {
           name: name ? name : restaurant.dataValues.name,
           address: address ? address : restaurant.dataValues.address,
+          rating: rating ? rating : restaurant.dataValues.rating,
           neighborhood_info: neighborhood_info
             ? neighborhood_info
             : restaurant.dataValues.neighborhood_info,
