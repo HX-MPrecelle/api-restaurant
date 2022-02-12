@@ -107,6 +107,8 @@ router.post("/", async (req, res) => {
       ) {
         return res.status(400).json({ message: "Información incompleta" });
       }
+    } else {
+      return res.status(404).json({ message: "Dueño inexistente" });
     }
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
