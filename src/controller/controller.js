@@ -35,9 +35,9 @@ const search = async () => {
     return {
       id: e.location_id,
       name: e.name,
-      photo: e.photo.images.original.url
-        ? e.photo.images.original.url
-        : e.photo.images.large.url,
+      photo:[e.photo.images.original.url]
+        ? [e.photo.images.original.url]
+        : [e.photo.images.large.url],
       email: e.email ? e.email : " - ",
       rating: e.rating.charAt(0),
       cuisine: e.cuisine?.map((e) => e.name),
