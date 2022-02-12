@@ -61,43 +61,52 @@ router.post("/", async (req, res) => {
       const restaurantEmail = allRestaurants.filter(
         (e) => e.email?.toLowerCase() === email?.toLowerCase()
       );
-      if (!restaurantName.length && !restaurantEmail.length) {
-        const restaurant = await Restaurant.create({
-          name,
-          address,
-          neighborhood_info,
-          cuisine,
-          email,
-          personas_max,
-          photo,
-          description,
-          price,
-          owner,
-        });
 
-        const cuisinesType = await Type.findAll({
-          where: {
-            name: cuisine,
-          },
-        });
+      const userFind = await User.findOne({
+        where: {
+          email: owner,
+        },
+      });
 
-        restaurant.addType(cuisinesType);
-        return res.status(201).send(restaurant);
-      } else {
-        return res
-          .status(406)
-          .json({ message: "Nombre de restaurant o dueño no existe" });
+      if (userFind) {
+        if (!restaurantName.length && !restaurantEmail.length) {
+          const restaurant = await Restaurant.create({
+            name,
+            address,
+            neighborhood_info,
+            cuisine,
+            email,
+            personas_max,
+            photo,
+            description,
+            price,
+            owner,
+          });
+
+          const cuisinesType = await Type.findAll({
+            where: {
+              name: cuisine,
+            },
+          });
+
+          restaurant.addType(cuisinesType);
+          return res.status(201).send(restaurant);
+        } else {
+          return res
+            .status(406)
+            .json({ message: "Nombre de restaurant o dueño no existe" });
+        }
       }
-    }
-    if (
-      !name ||
-      !address ||
-      !neighborhood_info ||
-      !cuisine ||
-      !email ||
-      !personas_max
-    ) {
-      return res.status(400).json({ message: "Información incompleta" });
+      if (
+        !name ||
+        !address ||
+        !neighborhood_info ||
+        !cuisine ||
+        !email ||
+        !personas_max
+      ) {
+        return res.status(400).json({ message: "Información incompleta" });
+      }
     }
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
