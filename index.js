@@ -1,10 +1,11 @@
-const server = require('./src/app.js');
-const { conn } = require('./src/db.js');
+const server = require("./src/app.js");
+const { conn } = require("./src/db.js");
+
+const PORT = process.env.PORT || 8080;
 
 // Syncing all the models at once.
-conn.sync({ force: false })
-.then(() => {
-  server.listen(3001, () => {
-    console.log('%s listening at 3001'); 
-  })
+conn.sync({ force: false }).then(() => {
+  server.listen(PORT, () => {
+    console.log(`%s listening at ${PORT}`);
+  });
 });

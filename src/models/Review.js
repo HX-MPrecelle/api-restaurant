@@ -12,14 +12,18 @@ module.exports = (sequelize) => {
         primaryKey: true,
       },
       rating: {
-        type: DataTypes.ENUM("1", "2", "3", "4", "5"),
+        type: DataTypes.ENUM("1","2","3","4","5"),
         allowNull: false,
       },
       description: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      user: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    { timestamps: false }
+    { timestamps: true }
   );
 };
