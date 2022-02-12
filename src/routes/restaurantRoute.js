@@ -94,21 +94,21 @@ router.post("/", async (req, res) => {
         } else {
           return res
             .status(406)
-            .json({ message: "Nombre de restaurant o dueño no existe" });
+            .json({ message: "El nombre del restaurant o su email ya existe" });
         }
+      } else {
+        return res.status(404).json({ message: "Debes estar registrado para poder crear un restaurant" })
       }
-      if (
-        !name ||
-        !address ||
-        !neighborhood_info ||
-        !cuisine ||
-        !email ||
-        !personas_max
-      ) {
-        return res.status(400).json({ message: "Información incompleta" });
-      }
-    } else {
-      return res.status(404).json({ message: "Dueño inexistente" });
+    }
+    if (
+      !name ||
+      !address ||
+      !neighborhood_info ||
+      !cuisine ||
+      !email ||
+      !personas_max
+    ) {
+      return res.status(400).json({ message: "Información incompleta" });
     }
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
