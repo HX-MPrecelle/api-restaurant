@@ -29,6 +29,7 @@ router.post("/", async (req, res) => {
             rating,
             description,
             user: user.dataValues.username,
+            restaurant: restaurant.dataValues.name,
             UserId: user.dataValues.id,
             RestaurantId: restaurant.dataValues.id,
           });
@@ -93,7 +94,7 @@ router.get("/user/:id", async (req, res) => {
         },
       });
       if (reviews.length) {
-        // console.log(reviews);
+        console.log(reviews);
         return res.status(200).send(reviews);
       } else {
         return res
@@ -106,7 +107,7 @@ router.get("/user/:id", async (req, res) => {
       });
     }
   } catch (e) {
-    console.log(e);
+    return res.status(400).json({ message: "Petición inválida" })
   }
 });
 

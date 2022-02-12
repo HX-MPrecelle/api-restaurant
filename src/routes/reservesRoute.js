@@ -33,6 +33,7 @@ router.post("/", async (req, res) => {
               date,
               time,
               pax,
+              author: user.dataValues.username,
               UserId: user.dataValues.id,
               RestaurantId: restaurant.dataValues.id,
             });
