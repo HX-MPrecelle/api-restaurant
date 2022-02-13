@@ -134,7 +134,7 @@ router.put("/:id", async (req, res) => {
 
 
 
-router.get("/restaurant/:id", async (req, res) => {
+router.get("/restaurant/:id/all", async (req, res) => {
   //id de restaurant
   const { id } = req.params;
 
@@ -163,7 +163,7 @@ router.get("/restaurant/:id", async (req, res) => {
   }
 });
 
-router.get("/user/:id", async (req, res) => {
+router.get("/user/:id/all", async (req, res) => {
   //id de usuario
   const { id } = req.params;
 

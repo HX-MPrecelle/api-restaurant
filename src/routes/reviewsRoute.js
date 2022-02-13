@@ -78,7 +78,7 @@ router.get("/restaurant/:id/all", async (req, res) => {
       });
     }
   } catch (e) {
-    console.log(e);
+    return res.status(400).json({ message: "Petición inválida" });
   }
 });
 
@@ -94,7 +94,7 @@ router.get("/user/:id/all", async (req, res) => {
         },
       });
       if (reviews.length) {
-        console.log(reviews);
+        // console.log(reviews);
         return res.status(200).send(reviews);
       } else {
         return res
