@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/restaurant/:id/all", async (req, res) => {
   //id de restaurant
   const { id } = req.params;
 
