@@ -82,7 +82,7 @@ router.get("/restaurant/:id/all", async (req, res) => {
   }
 });
 
-router.get("/user/:id", async (req, res) => {
+router.get("/user/:id/all", async (req, res) => {
   //id de usuario
   const { id } = req.params;
 
