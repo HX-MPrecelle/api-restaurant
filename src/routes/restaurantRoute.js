@@ -29,8 +29,8 @@ router.get("/:id", async (req, res) => {
   const allRestaurants = await getAllRestaurants();
   try {
     if (id) {
-      let restaurant = allRestaurants.filter((e) => e.id == id);
-      restaurant.length
+      let restaurant = allRestaurants.find((e) => e.id == id);
+      restaurant
         ? res.status(200).send(restaurant)
         : res.status(404).json({ message: "Restaurant no encontrado" });
     }
@@ -154,7 +154,7 @@ router.put("/:id", async (req, res) => {
           personas_max: personas_max
             ? personas_max
             : restaurant.dataValues.personas_max,
-          photo: photo ? photo : restaurant.dataValues.photo,
+          photo: photo ? (restaurant.dataValues.photo.concat(photo)) : restaurant.dataValues.photo,
           description: description
             ? description
             : restaurant.dataValues.description,
@@ -180,13 +180,10 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  const { owner } = req.body;
-
   try {
     const restaurant = await Restaurant.findOne({
       where: {
         id,
-        owner,
       },
     });
 
