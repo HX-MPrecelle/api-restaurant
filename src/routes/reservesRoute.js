@@ -33,6 +33,7 @@ router.post("/", async (req, res) => {
               date,
               time,
               pax,
+              status: "IN PROGRESS",
               author: user.dataValues.username,
               UserId: user.dataValues.id,
               RestaurantId: restaurant.dataValues.id,
@@ -72,7 +73,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -91,29 +92,47 @@ router.delete("/:id", async (req, res) => {
       });
       // console.log(reserve);
       // console.log(restaurant);
-      const updatedRestaurant = await restaurant.update(
-        {
-          personas_max:
-            restaurant.dataValues.personas_max + reserve.dataValues.pax,
-        },
-        {
-          where: {
-            id: restaurant.dataValues.id,
+      if (reserve.status === "IN PROGRESS") {
+        // console.log('Reserva previo', reserve);
+        await reserve.update(
+          {
+            status: "FINISHED",
           },
-        }
-      );
+          {
+            where: {
+              id: id,
+            }
+          }
+        )
+        // console.log('Reserva post', reserve);
+        // console.log('Restaurant previo', restaurant.dataValues);
+        await restaurant.update(
+          {
+            personas_max:
+              restaurant.dataValues.personas_max + reserve.dataValues.pax,
+          },
+          {
+            where: {
+              id: restaurant.dataValues.id,
+            },
+          }
+        );
+        // console.log('Restaurant post', restaurant.dataValues);
+        return res.status(200).json({ message: "La reserva fué finalizada con éxito" });      
+      } else {
+        return res.status(400).json({ message: "La reserva ya caducó" })
+      }
       // console.log(updatedRestaurant);
-      await reserve.destroy();
-
-      return res.status(200).send(updatedRestaurant);
     }
     return res
       .status(400)
-      .json({ message: "No se ha podido encontrar la reserva a eliminar" });
+      .json({ message: "No se ha podido encontrar la reserva" });
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
   }
 });
+
+
 
 router.get("/restaurant/:id", async (req, res) => {
   //id de restaurant
