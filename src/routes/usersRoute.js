@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
     });
     return res.status(200).send(newUser);
   } catch (e) {
-    console.log(e);
+    return res.status(404).json({ message: "Petición inválida" });
   }
 });
 
@@ -71,12 +71,10 @@ router.get("/:id/restaurants", async (req, res) => {
         return res.status(400).json({ message: "El usuario no existe" });
       }
     } else {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Se necesita un ID de usuario para poder encontrar sus restaurants",
-        });
+      return res.status(400).json({
+        message:
+          "Se necesita un ID de usuario para poder encontrar sus restaurants",
+      });
     }
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
@@ -109,7 +107,37 @@ router.get("/:id/reviews", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(400).json({ message: "Petición inválida" })
+    return res.status(400).json({ message: "Petición inválida" });
+  }
+});
+
+//Elimino la reseña por su id
+router.delete("/:id/reviews/:idReview", async (req, res) => {
+  const { id, idReview } = req.params;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+
+    const review = await Review.findOne({
+      where: {
+        id: idReview,
+        UserId: user.dataValues.id,
+      },
+    });
+
+    if (review) {
+      await review.destroy();
+      return res.status(200).json({ message: "Reseña eliminada con éxito" });
+    }
+    return res
+      .status(400)
+      .json({ message: "Sólo el autor de la reseña puede eliminarla" });
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
   }
 });
 
@@ -139,7 +167,7 @@ router.get("/:id/reserves", async (req, res) => {
       });
     }
   } catch (e) {
-    console.log(e);
+    return res.status(404).json({ message: "Petición inválida" });
   }
 });
 
