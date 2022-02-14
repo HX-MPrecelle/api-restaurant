@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 
+//Login común
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
@@ -43,6 +44,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+//Login con Google
 router.post("/google", async (req, res) => {
   const { email, id } = req.body;
 
