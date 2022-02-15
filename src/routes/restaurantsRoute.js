@@ -64,10 +64,27 @@ router.post("/:id/reserves", async (req, res) => {
       //   console.log(user.dataValues);
 
       if (restaurant && user) {
-        // console.log(restaurant);
-        // console.log(user);
+        const reserveDateRestaurant = await Reserve.findAll({
+          where: {
+            RestaurantId: restaurant.dataValues.id,
+            date,
+            status: "IN PROGRESS",
+          },
+        });
+        // console.log(reserveDateRestaurant?.map((r) => r.dataValues.pax));
+        var paxOccupedPerDay = 0;
+
+        for (const reserve of reserveDateRestaurant) {
+          paxOccupedPerDay += reserve.dataValues.pax;
+        }
+        // console.log(paxOccupedPerDay);
+
+        var placesAvailable =
+          restaurant.dataValues.personas_max -
+          (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
+
         if (user.email !== "API") {
-          if (restaurant.dataValues.personas_max >= pax) {
+          if (placesAvailable >= pax) {
             //Mercadopago
             const reserve = await Reserve.create({
               date,
@@ -78,26 +95,22 @@ router.post("/:id/reserves", async (req, res) => {
               UserId: user.dataValues.id,
               RestaurantId: restaurant.dataValues.id,
             });
-            await Restaurant.update(
-              {
-                personas_max: restaurant.dataValues.personas_max - pax,
-              },
-              {
-                where: {
-                  id: restaurant.dataValues.id,
-                },
-              }
-            );
             // console.log(restaurant.dataValues);
             return res.status(200).send(reserve);
           } else {
-            return res.status(400).json({
-              message: `Solo nos quedan ${restaurant.dataValues.personas_max} lugares disponibles`,
-            });
+            if (placesAvailable > 0) {
+              return res.status(400).json({
+                message: `Solo nos quedan ${placesAvailable} lugares disponibles para la fecha solicitada`,
+              });
+            } else {
+              return res.status(400).json({
+                message: `No nos quedan lugares disponibles para la fecha solicitada`,
+              });
+            }
           }
         } else {
           return res.status(400).json({
-            message: 'No se le pueden hacer reservas a este Restaurant',
+            message: "No se le pueden hacer reservas a este Restaurant",
           });
         }
       } else {
@@ -144,27 +157,33 @@ router.get("/:id/reserves", async (req, res) => {
 });
 
 //Creo un review de un restaurant
-router.post("/:id/reviews", async(req, res) => {
+router.post("/:id/reviews", async (req, res) => {
   const { id } = req.params;
   const { email, rating, description } = req.body;
 
   try {
     if (email && rating && description && id) {
-      if (rating === '1' || rating === '2' || rating === '3' || rating === '4' || rating === '5') {
+      if (
+        rating === "1" ||
+        rating === "2" ||
+        rating === "3" ||
+        rating === "4" ||
+        rating === "5"
+      ) {
         const restaurant = await Restaurant.findOne({
           where: {
             id,
           },
         });
         //   console.log(restaurant[0].dataValues);
-  
+
         const user = await User.findOne({
           where: {
             email,
           },
         });
         //   console.log(user[0].dataValues);
-  
+
         if (restaurant && user) {
           const review = await Review.create({
             rating,
@@ -182,10 +201,10 @@ router.post("/:id/reviews", async(req, res) => {
             .json({ message: "Usuario/Restaurant no existe" });
         }
       } else {
-        return res.status(400).json({ message: "El rating debe ser un número entero entre 1 y 5" });
+        return res
+          .status(400)
+          .json({ message: "El rating debe ser un número entero entre 1 y 5" });
       }
-
-
     } else {
       return res.status(400).json({ message: "Datos incompletos" });
     }
@@ -283,7 +302,9 @@ router.post("/", async (req, res) => {
             .json({ message: "El nombre del restaurant o su email ya existe" });
         }
       } else {
-        return res.status(404).json({ message: "Debes estar registrado para poder crear un restaurant" })
+        return res.status(404).json({
+          message: "Debes estar registrado para poder crear un restaurant",
+        });
       }
     }
     if (
@@ -341,7 +362,9 @@ router.put("/:id", async (req, res) => {
           personas_max: personas_max
             ? personas_max
             : restaurant.dataValues.personas_max,
-          photo: photo ? (restaurant.dataValues.photo.concat(photo)) : restaurant.dataValues.photo,
+          photo: photo
+            ? restaurant.dataValues.photo.concat(photo)
+            : restaurant.dataValues.photo,
           description: description
             ? description
             : restaurant.dataValues.description,

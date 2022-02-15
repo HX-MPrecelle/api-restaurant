@@ -35,19 +35,6 @@ router.put("/:id", async (req, res) => {
             }
           }
         )
-        // console.log('Reserva post', reserve);
-        // console.log('Restaurant previo', restaurant.dataValues);
-        await restaurant.update(
-          {
-            personas_max:
-              restaurant.dataValues.personas_max + reserve.dataValues.pax,
-          },
-          {
-            where: {
-              id: restaurant.dataValues.id,
-            },
-          }
-        );
         // console.log('Restaurant post', restaurant.dataValues);
         return res.status(200).json({ message: "La reserva fué finalizada con éxito" });      
       } else {
