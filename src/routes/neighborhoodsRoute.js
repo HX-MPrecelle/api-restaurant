@@ -54,6 +54,7 @@ const neighborhood_data = [
   "La Boca",
 ];
 
+//Obtengo todos los barrios
 router.get("/", async (req, res) => {
   var neighborhoods = neighborhood_data;
   try {

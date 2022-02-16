@@ -35,7 +35,7 @@ const search = async () => {
     return {
       id: e.location_id,
       name: e.name,
-      photo:[e.photo.images.original.url]
+      photo: [e.photo.images.original.url]
         ? [e.photo.images.original.url]
         : [e.photo.images.large.url],
       email: e.email ? e.email : " - ",

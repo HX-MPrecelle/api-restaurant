@@ -4,6 +4,7 @@ const { Type } = require("../db");
 
 const router = express.Router();
 
+//Obtengo todos los tipos de cocina
 router.get("/", async (req, res) => {
   const types = await getCuisines();
 

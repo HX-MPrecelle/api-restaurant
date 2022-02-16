@@ -22,6 +22,14 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      author: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.ENUM("IN PROGRESS", "FINISHED"),
+        allowNull: false
+      }
     },
     { timestamp: false }
   );
