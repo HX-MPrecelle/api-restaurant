@@ -47,6 +47,7 @@ const search = async () => {
       description: e.description,
       personas_max: 20,
       owner: "API",
+      status: "ENABLED",
     };
   });
 
@@ -64,6 +65,7 @@ const search = async () => {
         description: r.description,
         personas_max: r.personas_max,
         owner: r.owner,
+        status: r.status,
       },
     });
   });
