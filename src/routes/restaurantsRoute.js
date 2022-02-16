@@ -387,8 +387,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-//Elimino restaurant
-router.delete("/:id", async (req, res) => {
+router.put("/:id/disabled", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -397,19 +396,25 @@ router.delete("/:id", async (req, res) => {
         id,
       },
     });
-
-    // console.log('Soy restaurant', restaurant);
     if (restaurant) {
-      await restaurant.destroy();
-      return res
-        .status(200)
-        .json({ message: "Restaurant eliminado con éxito" });
+      const newStatusRestaurant = await restaurant.update(
+        {
+          status: "DISABLED",
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      res.status(200).send(newStatusRestaurant);
+    } else {
+      res.status(400).json({
+        message: "No se encuentra el restaurant para deshabilitarlo",
+      });
     }
-    return res
-      .status(400)
-      .json({ message: "Solo el dueño puede eliminar el restaurant" });
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    res.status(404).json({ message: "Petición inválida" });
   }
 });
 
