@@ -286,6 +286,7 @@ router.post("/", async (req, res) => {
             description,
             price,
             owner,
+            status: "ENABLED",
           });
 
           const cuisinesType = await Type.findAll({
