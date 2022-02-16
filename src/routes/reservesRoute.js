@@ -16,12 +16,6 @@ router.put("/:id", async (req, res) => {
 
     // console.log('Soy restaurant', restaurant);
     if (reserve) {
-      const restaurant = await Restaurant.findOne({
-        where: {
-          id: reserve.RestaurantId,
-        },
-      });
-      // console.log(reserve);
       // console.log(restaurant);
       if (reserve.status === "IN PROGRESS") {
         // console.log('Reserva previo', reserve);

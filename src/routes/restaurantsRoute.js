@@ -398,7 +398,7 @@ router.put("/:id/disabled", async (req, res) => {
       },
     });
     if (restaurant) {
-      const newStatusRestaurant = await restaurant.update(
+      await restaurant.update(
         {
           status: "DISABLED",
         },
@@ -408,7 +408,7 @@ router.put("/:id/disabled", async (req, res) => {
           },
         }
       );
-      res.status(200).send(newStatusRestaurant);
+      res.status(200).json({ message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito` });
     } else {
       res.status(400).json({
         message: "No se encuentra el restaurant para deshabilitarlo",
