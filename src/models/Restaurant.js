@@ -54,6 +54,10 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      status: {
+        type: DataTypes.ENUM("ENABLED", "DISABLED"),
+        allowNull: false,
+      }
     },
     { timestamp: false }
   );
