@@ -49,24 +49,87 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//Creo una reserva
-router.post("/:id/reserves", async (req, res) => {
-  //email de usuario, date, time y pax de reserve, id de restaurant
-  const { id } = req.params;
-  const { email, date, time, pax } = req.body;
-
+//Checkout mercadopago
+router.post("/:id/checkout", async (req, res) => {
   // Crea un objeto de preferencia
+  const { id } = req.params;
+  const { date, pax } = req.body;
   let preference = {
     items: [
       {
         title: "Reserva",
         unit_price: 100,
         quantity: parseInt(pax),
+        back_url: {
+          success: "http://localhost:3000/",
+          pending: "http://localhost:3000/",
+          failure: "http://localhost:3000/",
+        },
       },
     ],
   };
 
-  
+  try {
+    if (date && pax) {
+      const restaurant = await Restaurant.findOne({
+        where: {
+          id,
+        },
+      });
+
+      const reserveDateRestaurant = await Reserve.findAll({
+        where: {
+          RestaurantId: restaurant.dataValues.id,
+          date,
+          status: "IN PROGRESS",
+        },
+      });
+
+      var paxOccupedPerDay = 0;
+
+      for (const reserve of reserveDateRestaurant) {
+        paxOccupedPerDay += reserve.dataValues.pax;
+      }
+      // console.log(paxOccupedPerDay);
+
+      var placesAvailable =
+        restaurant.dataValues.personas_max -
+        (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
+
+      if (placesAvailable >= pax) {
+        mercadopago.preferences
+          .create(preference)
+          .then(function (response) {
+            // console.log(response.body);
+            res.json({url: response.body.init_point});
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        // console.log(restaurant.dataValues);
+      } else {
+        if (placesAvailable > 0) {
+          return res.status(400).json({
+            message: `Solo nos quedan ${placesAvailable} lugares disponibles para la fecha solicitada`,
+          });
+        } else {
+          return res.status(400).json({
+            message: `No nos quedan lugares disponibles para la fecha solicitada`,
+          });
+        }
+      }
+    }
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
+//Creo una reserva
+router.post("/:id/reserves", async (req, res) => {
+  //email de usuario, date, time y pax de reserve, id de restaurant
+  const { id } = req.params;
+  const { email, date, time, pax } = req.body;
+
   try {
     if (email && date && time && pax && id) {
       const restaurant = await Restaurant.findOne({
@@ -75,70 +138,28 @@ router.post("/:id/reserves", async (req, res) => {
         },
       });
       //   console.log(restaurant.dataValues);
-      
+
       const user = await User.findOne({
         where: {
           email,
         },
       });
       //   console.log(user.dataValues);
-      
+
       if (restaurant && user) {
-        const reserveDateRestaurant = await Reserve.findAll({
-          where: {
-            RestaurantId: restaurant.dataValues.id,
-            date,
-            status: "IN PROGRESS",
-          },
-        });
-        // console.log(reserveDateRestaurant?.map((r) => r.dataValues.pax));
-        var paxOccupedPerDay = 0;
-        
-        for (const reserve of reserveDateRestaurant) {
-          paxOccupedPerDay += reserve.dataValues.pax;
-        }
-        // console.log(paxOccupedPerDay);
-        
-        var placesAvailable =
-        restaurant.dataValues.personas_max -
-        (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
-        
         if (user.email !== "API") {
-          if (placesAvailable >= pax) {
-
-            //Mercadopago
-            mercadopago.preferences
-              .create(preference)
-              .then(function (response) {
-                console.log(response.body);
-                // res.redirect(response.body.init_point); ROMPE
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-
-            const reserve = await Reserve.create({
-              date,
-              time,
-              pax,
-              status: "IN PROGRESS",
-              author: user.dataValues.username,
-              UserId: user.dataValues.id,
-              RestaurantId: restaurant.dataValues.id,
-            });
-            // console.log(restaurant.dataValues);
-            return res.status(200).send(reserve);
-          } else {
-            if (placesAvailable > 0) {
-              return res.status(400).json({
-                message: `Solo nos quedan ${placesAvailable} lugares disponibles para la fecha solicitada`,
-              });
-            } else {
-              return res.status(400).json({
-                message: `No nos quedan lugares disponibles para la fecha solicitada`,
-              });
-            }
-          }
+          const reserve = await Reserve.create({
+            date,
+            time,
+            pax,
+            status: "IN PROGRESS",
+            author: user.dataValues.username,
+            restaurant: restaurant.dataValues.name,
+            UserId: user.dataValues.id,
+            RestaurantId: restaurant.dataValues.id,
+          });
+          // console.log(restaurant.dataValues);
+          return res.status(200).send(reserve);
         } else {
           return res.status(400).json({
             message: "No se le pueden hacer reservas a este Restaurant",
@@ -419,6 +440,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+//Deshabilito restaurant por id
 router.put("/:id/disabled", async (req, res) => {
   const { id } = req.params;
 
@@ -439,11 +461,9 @@ router.put("/:id/disabled", async (req, res) => {
           },
         }
       );
-      res
-        .status(200)
-        .json({
-          message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito`,
-        });
+      res.status(200).json({
+        message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito`,
+      });
     } else {
       res.status(400).json({
         message: "No se encuentra el restaurant para deshabilitarlo",
