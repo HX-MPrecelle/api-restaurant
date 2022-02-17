@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": 1075500074,
+      "nickname": "TETE8361118",
+      "password": "qatest317",
+      "site_status": "active",
+      "email": "test_user_60677271@testuser.com",
+      "credentials": {
+        "production": {
+          "public_key": "APP_USR-c0a5141e-6019-4d21-b321-eb0bb7d2f6a5",
+          "access_token": "APP_USR-949974469103397-021617-c4d2a1a6d9762d6e3d8359bc1cc68334-1075500074",
+          "client_id": "949974469103397",
+          "client_secret": "DwX0jX9bi2cxgM2kr0R4e14pEyFE1jrZ"
+        },
+        "test": {
+          "public_key": "TEST-47c0f698-bdf7-4d4a-9ac7-b5c4fe8c798b",
+          "access_token": "TEST-949974469103397-021617-898a7d0375ac04ba9ba064060cf64f6d-1075500074"
+        }
+      }
+    }
+  ]
+}
