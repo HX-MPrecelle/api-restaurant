@@ -1,6 +1,8 @@
 const express = require("express");
 const { getAllRestaurants } = require("../controller/controller");
 const { Restaurant, Type, User } = require("../db");
+const { crearOrden, notificationOrden} = require('../controller/controller')
+
 
 const router = express.Router();
 
@@ -201,5 +203,9 @@ router.delete("/:id", async (req, res) => {
     return res.status(404).json({ message: "Petición inválida" });
   }
 });
+
+
+
+
 
 module.exports = router;

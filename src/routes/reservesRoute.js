@@ -29,6 +29,11 @@ router.post("/", async (req, res) => {
         if (user.email !== "API") {
           if (restaurant.dataValues.personas_max >= pax) {
             //Mercadopago
+
+            
+        
+
+
             const reserve = await Reserve.create({
               date,
               time,
