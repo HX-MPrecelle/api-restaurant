@@ -28,13 +28,9 @@ router.post("/", async (req, res) => {
 
   try {
     const allUser = await User.findAll();
-    const userUsername = allUser.find(
-      (e) => e.username.toLowerCase() === username.toLowerCase()
-    );
     const userEmail = allUser.find(
       (e) => e.email.toLowerCase() === email.toLowerCase()
     );
-    if (userUsername) return res.status(400).send("Username already exist");
     if (userEmail) return res.status(400).send("Email already exist");
     //Hasheo la password para enviarla de forma segura a la DB, el segundo parametro son las vueltas de encriptación que queremos darle.
     let hashedPassword = await bcrypt.hash(password, 10);
