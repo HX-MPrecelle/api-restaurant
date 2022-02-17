@@ -2,6 +2,14 @@ const express = require("express");
 const { getAllRestaurants } = require("../controller/controller");
 const { Restaurant, Type, User, Review, Reserve } = require("../db");
 
+// SDK de Mercado Pago
+const mercadopago = require("mercadopago");
+// Agrega credenciales
+mercadopago.configure({
+  access_token:
+    "APP_USR-949974469103397-021617-c4d2a1a6d9762d6e3d8359bc1cc68334-1075500074",
+});
+
 const router = express.Router();
 
 //Traigo todos los restaurants y los cargo en la DB
@@ -47,6 +55,18 @@ router.post("/:id/reserves", async (req, res) => {
   const { id } = req.params;
   const { email, date, time, pax } = req.body;
 
+  // Crea un objeto de preferencia
+  let preference = {
+    items: [
+      {
+        title: "Reserva",
+        unit_price: 100,
+        quantity: parseInt(pax),
+      },
+    ],
+  };
+
+  
   try {
     if (email && date && time && pax && id) {
       const restaurant = await Restaurant.findOne({
@@ -55,14 +75,14 @@ router.post("/:id/reserves", async (req, res) => {
         },
       });
       //   console.log(restaurant.dataValues);
-
+      
       const user = await User.findOne({
         where: {
           email,
         },
       });
       //   console.log(user.dataValues);
-
+      
       if (restaurant && user) {
         const reserveDateRestaurant = await Reserve.findAll({
           where: {
@@ -73,19 +93,30 @@ router.post("/:id/reserves", async (req, res) => {
         });
         // console.log(reserveDateRestaurant?.map((r) => r.dataValues.pax));
         var paxOccupedPerDay = 0;
-
+        
         for (const reserve of reserveDateRestaurant) {
           paxOccupedPerDay += reserve.dataValues.pax;
         }
         // console.log(paxOccupedPerDay);
-
+        
         var placesAvailable =
-          restaurant.dataValues.personas_max -
-          (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
-
+        restaurant.dataValues.personas_max -
+        (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
+        
         if (user.email !== "API") {
           if (placesAvailable >= pax) {
+
             //Mercadopago
+            mercadopago.preferences
+              .create(preference)
+              .then(function (response) {
+                console.log(response.body);
+                // res.redirect(response.body.init_point); ROMPE
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+
             const reserve = await Reserve.create({
               date,
               time,
@@ -408,7 +439,11 @@ router.put("/:id/disabled", async (req, res) => {
           },
         }
       );
-      res.status(200).json({ message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito` });
+      res
+        .status(200)
+        .json({
+          message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito`,
+        });
     } else {
       res.status(400).json({
         message: "No se encuentra el restaurant para deshabilitarlo",
