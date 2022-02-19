@@ -57,7 +57,6 @@ const search = async () => {
         name: r.name,
         photo: r.photo,
         email: r.email,
-        rating: r.rating,
         cuisine: r.cuisine,
         neighborhood_info: r.neighborhood,
         price: r.price[0],

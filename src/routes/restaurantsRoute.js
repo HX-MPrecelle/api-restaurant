@@ -54,19 +54,22 @@ router.post("/:id/checkout", async (req, res) => {
   // Crea un objeto de preferencia
   const { id } = req.params;
   const { date, pax } = req.body;
-  let preference = {
+  let preference = {};
+
+  preference = {
     items: [
       {
         title: "Reserva",
         unit_price: 100,
         quantity: parseInt(pax),
-        back_url: {
-          success: "http://localhost:3000/",
-          pending: "http://localhost:3000/",
-          failure: "http://localhost:3000/",
-        },
       },
     ],
+    back_urls: {
+      success: "http://localhost:3000/success",
+      pending: "http://localhost:3000/failure",
+      failure: "http://localhost:3000/failure",
+    },
+    auto_return: "approved",
   };
 
   try {
@@ -381,7 +384,6 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   const {
-    owner,
     name,
     address,
     rating,
@@ -398,7 +400,6 @@ router.put("/:id", async (req, res) => {
     const restaurant = await Restaurant.findOne({
       where: {
         id,
-        owner,
       },
     });
     if (restaurant) {
@@ -432,7 +433,7 @@ router.put("/:id", async (req, res) => {
       res.status(200).send(newRestaurant);
     } else {
       res.status(400).json({
-        message: "Solo el dueño puede modificar los datos del restaurant",
+        message: "No se encuentra el restaurant",
       });
     }
   } catch (e) {

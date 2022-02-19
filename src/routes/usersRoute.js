@@ -45,6 +45,50 @@ router.post("/", async (req, res) => {
   }
 });
 
+//Restablezco contraseña
+router.put("/resetPassword", async (req, res) => {
+  const { email, password, password2 } = req.body;
+
+  if (!email || !password || !password2) {
+    res.status(400).json({ message: "Por favor, complete todos los campos" })
+  }
+
+  try {
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (user) {
+      if (password === password2) {
+        let hashedPassword = await bcrypt.hash(password, 10)
+        await user.update(
+          {
+            password: hashedPassword,
+          },
+          {
+            where: {
+              email,
+            },
+          }
+        );
+        res.status(200).json({
+          message: `Su contraseña ha sido restablecida correctamente`,
+        });
+      } else {
+        res.status(400).json({ message: "Las constraseñas no coinciden" })
+      }
+    } else {
+      res.status(400).json({
+        message: "Usuario inválido",
+      });
+    }
+  } catch (e) {
+    res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
+
 //Obtengo los restaurants creados por un usuario en particular
 router.get("/:id/restaurants", async (req, res) => {
   const { id } = req.params;
@@ -161,6 +205,160 @@ router.get("/:id/reserves", async (req, res) => {
       return res.status(400).json({
         message: "Hace falta el ID del usuario para encontrar sus reservas",
       });
+    }
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
+//Agrego favorito a un usuario especifico
+router.put("/:id/favorites", async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+    if (user) {
+      const findFav = user.dataValues.favorite?.find((e) => e == favorite);
+      if (!findFav) {
+        await user.update(
+          {
+            favorite:
+              user.dataValues.favorite === null
+                ? [favorite]
+                : [...user.dataValues.favorite, favorite],
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+
+        const favName = await Restaurant.findOne({
+          where: {
+            id: favorite,
+          },
+        });
+
+        res.status(200).json({
+          message: `${favName.dataValues.name} ha sido añadido a su lista de favoritos`,
+        });
+      } else {
+        res.status(400).json({
+          message: `${favName.dataValues.name} ya existe en su lista de favoritos`,
+        });
+      }
+    } else {
+      res
+        .status(400)
+        .json({ message: "El usuario no existe o no está loggeado" });
+    }
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
+//Traigo los favoritos de un usuario específico
+router.get("/:id/favorites", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (id) {
+      const user = await User.findOne({
+        where: {
+          id,
+        },
+      });
+      console.log(user.dataValues);
+      if (user.dataValues.favorite) {
+        const favs = [];
+        for (const fav of user.dataValues.favorite) {
+          let restaurant = await Restaurant.findOne({
+            where: {
+              id: fav,
+            },
+          });
+          favs.push(restaurant.dataValues);
+        }
+
+        const response = [];
+        for (const fav of favs) {
+          // console.log(fav);
+          let obj = {
+            id: fav.id,
+            name: fav.name,
+            rating: fav.rating,
+            cuisine: fav.cuisine
+          }
+          response.push(obj)
+        }
+
+        console.log(response);
+        res.status(200).send(response);
+      } else {
+        res
+          .status(400)
+          .json({ message: "Aún no has agregado ningún favorito a tu lista" });
+      }
+    } else {
+      res.status(400).json({ message: "No se encontró el usuario por su ID" });
+    }
+  } catch (e) {
+    return res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
+//Elimino favorito de la lista de un usuario específico
+router.delete("/:id/favorites", async (req, res) => {
+  const { id } = req.params;
+  const { favId } = req.query;
+
+  try {
+    if (id && favId) {
+      const user = await User.findOne({
+        where: {
+          id,
+        },
+      });
+
+      if (user.dataValues.favorite.length > 0) {
+        const favorite = user.dataValues.favorite?.filter((e) => e !== favId);
+
+        await user.update(
+          {
+            favorite: favorite,
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+
+        const favName = await Restaurant.findOne({
+          where: {
+            id: favId,
+          },
+        });
+
+        res.status(200).json({
+          message: `Has eliminado a ${favName.dataValues.name} de tu lista de favoritos`,
+        });
+      } else {
+        res.status(400).json({
+          message:
+            "No tienes ningún favorito agregado en tu lista para poder eliminar",
+        });
+      }
+    } else {
+      res
+        .status(400)
+        .json({ message: "Faltan datos para poder eliminar el favorito" });
     }
   } catch (e) {
     return res.status(404).json({ message: "Petición inválida" });
