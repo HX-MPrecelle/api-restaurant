@@ -475,4 +475,38 @@ router.put("/:id/disabled", async (req, res) => {
   }
 });
 
+//Habilito restaurant por id
+router.put("/:id/enabled", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id,
+      },
+    });
+    if (restaurant) {
+      await restaurant.update(
+        {
+          status: "ENABLED",
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      res.status(200).json({
+        message: `El restaurant '${restaurant.dataValues.name}' fué habilitado nuevamente`,
+      });
+    } else {
+      res.status(400).json({
+        message: "No se encuentra el restaurant para habilitarlo",
+      });
+    }
+  } catch (e) {
+    res.status(404).json({ message: "Petición inválida" });
+  }
+});
+
 module.exports = router;
