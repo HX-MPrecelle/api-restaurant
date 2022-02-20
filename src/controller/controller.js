@@ -55,8 +55,11 @@ const search = async () => {
     Restaurant.findOrCreate({
       where: {
         name: r.name,
+      },
+      defaults: {
         photo: r.photo,
         email: r.email,
+        rating: r.rating,
         cuisine: r.cuisine,
         neighborhood_info: r.neighborhood,
         price: r.price[0],
@@ -65,7 +68,7 @@ const search = async () => {
         personas_max: r.personas_max,
         owner: r.owner,
         status: r.status,
-      },
+      }
     });
   });
 
