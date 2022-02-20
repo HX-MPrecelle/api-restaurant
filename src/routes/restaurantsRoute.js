@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllRestaurants } = require("../controller/controller");
+const { getRestaurantsDb } = require("../controller/controller");
 const { Restaurant, Type, User, Review, Reserve } = require("../db");
 
 // SDK de Mercado Pago
@@ -15,7 +15,7 @@ const router = express.Router();
 //Traigo todos los restaurants y los cargo en la DB
 router.get("/", async (req, res) => {
   const { name } = req.query;
-  const allRestaurants = await getAllRestaurants();
+  const allRestaurants = await getRestaurantsDb();
   // console.log(allRestaurants);
   try {
     if (name) {
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
 //Traigo un restaurant por ID para el detalle completo
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const allRestaurants = await getAllRestaurants();
+  const allRestaurants = await getRestaurantsDb();
   try {
     if (id) {
       let restaurant = allRestaurants.find((e) => e.id == id);
@@ -314,7 +314,7 @@ router.post("/", async (req, res) => {
   } = req.body;
   try {
     if (name && email) {
-      const allRestaurants = await getAllRestaurants();
+      const allRestaurants = await getRestaurantsDb();
       const restaurantName = allRestaurants.filter(
         (e) => e.name?.toLowerCase() === name?.toLowerCase()
       );
