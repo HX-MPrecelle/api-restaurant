@@ -150,7 +150,7 @@ router.post("/:id/reserves", async (req, res) => {
       //   console.log(user.dataValues);
 
       if (restaurant && user) {
-        if (user.email !== "API") {
+        if (restaurant.owner !== "API") {
           const reserve = await Reserve.create({
             date,
             time,
