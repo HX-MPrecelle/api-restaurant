@@ -104,7 +104,7 @@ router.post("/:id/checkout", async (req, res) => {
           .create(preference)
           .then(function (response) {
             // console.log(response.body);
-            res.json({url: response.body.init_point});
+            res.json({ url: response.body.init_point });
           })
           .catch(function (error) {
             console.log(error);
@@ -149,29 +149,60 @@ router.post("/:id/reserves", async (req, res) => {
       });
       //   console.log(user.dataValues);
 
-      if (restaurant && user) {
-        if (restaurant.owner !== "API") {
-          const reserve = await Reserve.create({
-            date,
-            time,
-            pax,
-            status: "IN PROGRESS",
-            author: user.dataValues.username,
-            restaurant: restaurant.dataValues.name,
-            UserId: user.dataValues.id,
-            RestaurantId: restaurant.dataValues.id,
-          });
-          // console.log(restaurant.dataValues);
-          return res.status(200).send(reserve);
+      const reserveDateRestaurant = await Reserve.findAll({
+        where: {
+          RestaurantId: restaurant.dataValues.id,
+          date,
+          status: "IN PROGRESS",
+        },
+      });
+
+      var paxOccupedPerDay = 0;
+
+      for (const reserve of reserveDateRestaurant) {
+        paxOccupedPerDay += reserve.dataValues.pax;
+      }
+      // console.log(paxOccupedPerDay);
+
+      var placesAvailable =
+        restaurant.dataValues.personas_max -
+        (paxOccupedPerDay > 0 ? paxOccupedPerDay : 0);
+
+      if (placesAvailable >= pax) {
+        if (restaurant && user) {
+          if (restaurant.owner !== "API") {
+            const reserve = await Reserve.create({
+              date,
+              time,
+              pax,
+              status: "IN PROGRESS",
+              author: user.dataValues.username,
+              restaurant: restaurant.dataValues.name,
+              UserId: user.dataValues.id,
+              RestaurantId: restaurant.dataValues.id,
+            });
+            // console.log(restaurant.dataValues);
+            return res.status(200).send(reserve);
+          } else {
+            return res.status(400).json({
+              message: "No se le pueden hacer reservas a este Restaurant",
+            });
+          }
         } else {
-          return res.status(400).json({
-            message: "No se le pueden hacer reservas a este Restaurant",
-          });
+          return res
+            .status(400)
+            .json({ message: "Usuario/Restaurant no existe" });
         }
       } else {
-        return res
-          .status(400)
-          .json({ message: "Usuario/Restaurant no existe" });
+        if (placesAvailable > 0) {
+          return res.status(400).json({
+            message: `Solo nos quedan ${placesAvailable} lugares disponibles para la fecha solicitada`,
+          });
+        } else {
+          return res.status(400).json({
+            message: `No nos quedan lugares disponibles para la fecha solicitada`,
+          });
+        }
       }
     } else {
       return res.status(400).json({ message: "Faltan rellenar campos" });
