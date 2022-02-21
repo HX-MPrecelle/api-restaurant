@@ -6,9 +6,8 @@ const router = express.Router();
 
 //Obtengo todos los tipos de cocina
 router.get("/", async (req, res) => {
-  const types = await getCuisines();
-
   try {
+    const types = await getCuisines();
     types?.forEach((t) => {
       Type.findOrCreate({
         where: {
@@ -20,6 +19,7 @@ router.get("/", async (req, res) => {
     return res.status(200).send(allTypes);
   } catch (e) {
     console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 

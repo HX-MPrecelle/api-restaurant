@@ -56,8 +56,8 @@ const neighborhood_data = [
 
 //Obtengo todos los barrios
 router.get("/", async (req, res) => {
-  var neighborhoods = neighborhood_data;
   try {
+    var neighborhoods = neighborhood_data;
     neighborhoods?.forEach((n) => {
       Neighborhood.findOrCreate({
         where: {
@@ -69,6 +69,7 @@ router.get("/", async (req, res) => {
     return res.status(200).send(allNeighborhoods);
   } catch (e) {
     console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
