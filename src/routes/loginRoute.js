@@ -7,15 +7,14 @@ const router = express.Router();
 
 //Login común
 router.post("/", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res
-      .status(400)
-      .send({ message: "Por favor, complete los campos" });
-  }
-
   try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Por favor, complete los campos" });
+    }
     const allUser = await User.findAll();
     const user = allUser.find(
       (e) => e.email.toLowerCase() === email.toLowerCase()
@@ -31,28 +30,25 @@ router.post("/", async (req, res) => {
         };
         return res.status(200).send(loggedUser);
       } else {
-        return res
-          .status(400)
-          .json({ message: "Contraseña incorrecta" });
+        return res.status(401).json({ message: "Contraseña incorrecta" });
       }
     } else {
-      return res.status(404).json({ message: "El usuario no existe" });
+      return res.status(401).json({ message: "El usuario no existe" });
     }
   } catch (e) {
-    // console.log(e);
-    return res.status(404).json({ message: "Respuesta inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Login con Google
 router.post("/google", async (req, res) => {
-  const { email, id } = req.body;
-
-  if (!email || !id) {
-    return res.status(400).send({ message: "Por favor, ingresa nuevamente" });
-  }
-
   try {
+    const { email, id } = req.body;
+
+    if (!email || !id) {
+      return res.status(401).json({ message: "Por favor, ingresa nuevamente" });
+    }
     const allUser = await User.findAll();
     const user = allUser.find(
       (e) => e.email.toLowerCase() === email.toLowerCase()
@@ -63,11 +59,11 @@ router.post("/google", async (req, res) => {
         .status(200)
         .json({ id: user.id, email: user.email, username: user.username });
     } else {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(401).json({ message: "Usuario no encontrado" });
     }
   } catch (e) {
-    // console.log(e);
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 

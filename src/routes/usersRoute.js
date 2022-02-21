@@ -41,8 +41,8 @@ router.post("/", async (req, res) => {
     });
     return res.status(200).send(newUser);
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Restablezco contraseña
@@ -84,8 +84,8 @@ router.put("/resetPassword", async (req, res) => {
       });
     }
   } catch (e) {
-    res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 
@@ -117,8 +117,8 @@ router.get("/:id/restaurants", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Obtengo las reviews creadas por un usuario en particular
@@ -147,8 +147,8 @@ router.get("/:id/reviews", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(400).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Elimino la reseña por su id
@@ -177,8 +177,8 @@ router.delete("/:id/reviews/:idReview", async (req, res) => {
       .status(400)
       .json({ message: "Sólo el autor de la reseña puede eliminarla" });
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Obtengo todas las reservas realizadas por un usuario en particular
@@ -207,8 +207,8 @@ router.get("/:id/reserves", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Agrego favorito a un usuario especifico
@@ -259,8 +259,8 @@ router.put("/:id/favorites", async (req, res) => {
         .json({ message: "El usuario no existe o no está loggeado" });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Traigo los favoritos de un usuario específico
@@ -309,8 +309,8 @@ router.get("/:id/favorites", async (req, res) => {
       res.status(400).json({ message: "No se encontró el usuario por su ID" });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Elimino favorito de la lista de un usuario específico
@@ -361,8 +361,8 @@ router.delete("/:id/favorites", async (req, res) => {
         .json({ message: "Faltan datos para poder eliminar el favorito" });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
-  }
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 module.exports = router;

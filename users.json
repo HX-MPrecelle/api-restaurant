@@ -18,6 +18,25 @@
           "access_token": "TEST-949974469103397-021617-898a7d0375ac04ba9ba064060cf64f6d-1075500074"
         }
       }
-    }
+    },
+    {
+      "id": 1078270238,
+      "nickname": "TESTKQCB4FT8",
+      "password": "qatest4155",
+      "site_status": "active",
+      "email": "test_user_66650532@testuser.com",
+      "credentials": {
+        "production": {
+          "public_key": "-",
+          "access_token": "-",
+          "client_id": "-",
+          "client_secret": "-"
+        },
+        "test": {
+          "public_key": "-",
+          "access_token": "-"
+        }
+      }
+  }
   ]
 }

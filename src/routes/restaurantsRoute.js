@@ -14,65 +14,66 @@ const router = express.Router();
 
 //Traigo todos los restaurants y los cargo en la DB
 router.get("/", async (req, res) => {
-  const { name } = req.query;
-  const allRestaurants = await getRestaurantsDb();
-  // console.log(allRestaurants);
   try {
+    const { name } = req.query;
+    const allRestaurants = await getRestaurantsDb();
+    // console.log(allRestaurants);
     if (name) {
       let restaurant = allRestaurants.filter((e) =>
         e.name.toLowerCase().includes(name.toLowerCase())
       );
       restaurant.length
         ? res.status(200).send(restaurant)
-        : res.status(404).json({ message: "Restaurant no encontrado" });
+        : res.status(400).json({ message: "Restaurant no encontrado" });
     } else {
       return res.status(200).send(allRestaurants);
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Traigo un restaurant por ID para el detalle completo
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const allRestaurants = await getRestaurantsDb();
   try {
+    const { id } = req.params;
+    const allRestaurants = await getRestaurantsDb();
     if (id) {
       let restaurant = allRestaurants.find((e) => e.id == id);
       restaurant
         ? res.status(200).send(restaurant)
-        : res.status(404).json({ message: "Restaurant no encontrado" });
+        : res.status(400).json({ message: "Restaurant no encontrado" });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Checkout mercadopago
 router.post("/:id/checkout", async (req, res) => {
-  // Crea un objeto de preferencia
-  const { id } = req.params;
-  const { date, pax } = req.body;
-  let preference = {};
-
-  preference = {
-    items: [
-      {
-        title: "Reserva",
-        unit_price: 100,
-        quantity: parseInt(pax),
-      },
-    ],
-    back_urls: {
-      success: "http://localhost:3000/success",
-      pending: "http://localhost:3000/failure",
-      failure: "http://localhost:3000/failure",
-    },
-    auto_return: "approved",
-  };
-
   try {
+    // Crea un objeto de preferencia
+    const { id } = req.params;
+    const { date, pax } = req.body;
+    let preference = {};
+
+    preference = {
+      items: [
+        {
+          title: "Reserva",
+          unit_price: 100,
+          quantity: parseInt(pax),
+        },
+      ],
+      back_urls: {
+        success: "http://localhost:3000/success",
+        pending: "http://localhost:3000/failure",
+        failure: "http://localhost:3000/failure",
+      },
+      auto_return: "approved",
+    };
     if (date && pax) {
       const restaurant = await Restaurant.findOne({
         where: {
@@ -104,7 +105,7 @@ router.post("/:id/checkout", async (req, res) => {
           .create(preference)
           .then(function (response) {
             // console.log(response.body);
-            res.json({ url: response.body.init_point });
+            res.status(200).json({ url: response.body.init_point });
           })
           .catch(function (error) {
             console.log(error);
@@ -123,17 +124,17 @@ router.post("/:id/checkout", async (req, res) => {
       }
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Creo una reserva
 router.post("/:id/reserves", async (req, res) => {
-  //email de usuario, date, time y pax de reserve, id de restaurant
-  const { id } = req.params;
-  const { email, date, time, pax } = req.body;
-
   try {
+    //email de usuario, date, time y pax de reserve, id de restaurant
+    const { id } = req.params;
+    const { email, date, time, pax } = req.body;
     if (email && date && time && pax && id) {
       const restaurant = await Restaurant.findOne({
         where: {
@@ -182,7 +183,7 @@ router.post("/:id/reserves", async (req, res) => {
               RestaurantId: restaurant.dataValues.id,
             });
             // console.log(restaurant.dataValues);
-            return res.status(200).send(reserve);
+            return res.status(201).send(reserve);
           } else {
             return res.status(400).json({
               message: "No se le pueden hacer reservas a este Restaurant",
@@ -208,16 +209,16 @@ router.post("/:id/reserves", async (req, res) => {
       return res.status(400).json({ message: "Faltan rellenar campos" });
     }
   } catch (e) {
-    return res.status(404).send({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Traigo todas las reservas de un restaurant
 router.get("/:id/reserves", async (req, res) => {
-  //id de restaurant
-  const { id } = req.params;
-
   try {
+    //id de restaurant
+    const { id } = req.params;
     if (id) {
       const reserves = await Reserve.findAll({
         where: {
@@ -233,21 +234,21 @@ router.get("/:id/reserves", async (req, res) => {
         });
       }
     } else {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Hace falta el ID del restaurant para encontrar sus reservas",
       });
     }
   } catch (e) {
-    return res.status(400).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Creo un review de un restaurant
 router.post("/:id/reviews", async (req, res) => {
-  const { id } = req.params;
-  const { email, rating, description } = req.body;
-
   try {
+    const { id } = req.params;
+    const { email, rating, description } = req.body;
     if (email && rating && description && id) {
       if (
         rating === "1" ||
@@ -288,23 +289,23 @@ router.post("/:id/reviews", async (req, res) => {
         }
       } else {
         return res
-          .status(400)
+          .status(401)
           .json({ message: "El rating debe ser un número entero entre 1 y 5" });
       }
     } else {
-      return res.status(400).json({ message: "Datos incompletos" });
+      return res.status(401).json({ message: "Datos incompletos" });
     }
   } catch (e) {
-    return res.status(400).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Traigo todas las review de un restaurant
 router.get("/:id/reviews", async (req, res) => {
-  //id de restaurant
-  const { id } = req.params;
-
   try {
+    //id de restaurant
+    const { id } = req.params;
     if (id) {
       const reviews = await Review.findAll({
         where: {
@@ -320,30 +321,31 @@ router.get("/:id/reviews", async (req, res) => {
           .json({ message: "El restaurant no tiene reseñas para mostrar" });
       }
     } else {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Hace falta el ID del restaurant para encontrar sus reseñas",
       });
     }
   } catch (e) {
-    return res.status(400).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Creo un restaurant
 router.post("/", async (req, res) => {
-  const {
-    name,
-    address,
-    neighborhood_info,
-    cuisine,
-    email,
-    personas_max,
-    photo,
-    description,
-    price,
-    owner,
-  } = req.body;
   try {
+    const {
+      name,
+      address,
+      neighborhood_info,
+      cuisine,
+      email,
+      personas_max,
+      photo,
+      description,
+      price,
+      owner,
+    } = req.body;
     if (name && email) {
       const allRestaurants = await getRestaurantsDb();
       const restaurantName = allRestaurants.filter(
@@ -385,11 +387,11 @@ router.post("/", async (req, res) => {
           return res.status(201).send(restaurant);
         } else {
           return res
-            .status(406)
+            .status(403)
             .json({ message: "El nombre del restaurant o su email ya existe" });
         }
       } else {
-        return res.status(404).json({
+        return res.status(401).json({
           message: "Debes estar registrado para poder crear un restaurant",
         });
       }
@@ -402,32 +404,32 @@ router.post("/", async (req, res) => {
       !email ||
       !personas_max
     ) {
-      return res.status(400).json({ message: "Información incompleta" });
+      return res.status(401).json({ message: "Información incompleta" });
     }
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Modifico datos del restaurant existente
 router.put("/:id", async (req, res) => {
-  //id de restaurant, email de usuario loggeado
-  const { id } = req.params;
-
-  const {
-    name,
-    address,
-    rating,
-    neighborhood_info,
-    cuisine,
-    email,
-    personas_max,
-    photo,
-    description,
-    price,
-  } = req.body;
-
   try {
+    //id de restaurant, email de usuario loggeado
+    const { id } = req.params;
+
+    const {
+      name,
+      address,
+      rating,
+      neighborhood_info,
+      cuisine,
+      email,
+      personas_max,
+      photo,
+      description,
+      price,
+    } = req.body;
     const restaurant = await Restaurant.findOne({
       where: {
         id,
@@ -468,15 +470,15 @@ router.put("/:id", async (req, res) => {
       });
     }
   } catch (e) {
-    res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Deshabilito restaurant por id
 router.put("/:id/disabled", async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const restaurant = await Restaurant.findOne({
       where: {
         id,
@@ -502,15 +504,15 @@ router.put("/:id/disabled", async (req, res) => {
       });
     }
   } catch (e) {
-    res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
 //Habilito restaurant por id
 router.put("/:id/enabled", async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const restaurant = await Restaurant.findOne({
       where: {
         id,
@@ -536,7 +538,8 @@ router.put("/:id/enabled", async (req, res) => {
       });
     }
   } catch (e) {
-    res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 

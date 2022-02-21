@@ -1,13 +1,12 @@
 const express = require("express");
-const { Restaurant, Reserve } = require("../db");
+const { Reserve } = require("../db");
 
 const router = express.Router();
 
 //Modifico estado de la reserva de IN PROGRESS -> FINISHED
 router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const reserve = await Reserve.findOne({
       where: {
         id,
@@ -26,13 +25,15 @@ router.put("/:id", async (req, res) => {
           {
             where: {
               id: id,
-            }
+            },
           }
-        )
+        );
         // console.log('Restaurant post', restaurant.dataValues);
-        return res.status(200).json({ message: "La reserva fué finalizada con éxito" });      
+        return res
+          .status(200)
+          .json({ message: "La reserva fué finalizada con éxito" });
       } else {
-        return res.status(400).json({ message: "La reserva ya caducó" })
+        return res.status(400).json({ message: "La reserva ya caducó" });
       }
       // console.log(updatedRestaurant);
     }
@@ -40,7 +41,8 @@ router.put("/:id", async (req, res) => {
       .status(400)
       .json({ message: "No se ha podido encontrar la reserva" });
   } catch (e) {
-    return res.status(404).json({ message: "Petición inválida" });
+    console.log(e);
+    res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
