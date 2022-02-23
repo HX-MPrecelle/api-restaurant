@@ -25,12 +25,13 @@ router.get("/", async (req, res) => {
       restaurant.length
         ? res.status(200).send(restaurant)
         : res.status(400).json({ message: "Restaurant no encontrado" });
+      return 
     } else {
       return res.status(200).send(allRestaurants);
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -44,10 +45,11 @@ router.get("/:id", async (req, res) => {
       restaurant
         ? res.status(200).send(restaurant)
         : res.status(400).json({ message: "Restaurant no encontrado" });
+        return 
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -105,7 +107,7 @@ router.post("/:id/checkout", async (req, res) => {
           .create(preference)
           .then(function (response) {
             // console.log(response.body);
-            res.status(200).json({ url: response.body.init_point });
+            return res.status(200).json({ url: response.body.init_point });
           })
           .catch(function (error) {
             console.log(error);
@@ -125,7 +127,7 @@ router.post("/:id/checkout", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -210,7 +212,7 @@ router.post("/:id/reserves", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -240,7 +242,7 @@ router.get("/:id/reserves", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -297,7 +299,7 @@ router.post("/:id/reviews", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -327,7 +329,7 @@ router.get("/:id/reviews", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -408,7 +410,7 @@ router.post("/", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -463,15 +465,15 @@ router.put("/:id", async (req, res) => {
           },
         }
       );
-      res.status(200).send(newRestaurant);
+      return res.status(200).send(newRestaurant);
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No se encuentra el restaurant",
       });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -495,17 +497,17 @@ router.put("/:id/disabled", async (req, res) => {
           },
         }
       );
-      res.status(200).json({
+      return res.status(200).json({
         message: `El restaurant '${restaurant.dataValues.name}' fué deshabilitado con éxito`,
       });
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No se encuentra el restaurant para deshabilitarlo",
       });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
@@ -529,17 +531,17 @@ router.put("/:id/enabled", async (req, res) => {
           },
         }
       );
-      res.status(200).json({
+      return res.status(200).json({
         message: `El restaurant '${restaurant.dataValues.name}' fué habilitado nuevamente`,
       });
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No se encuentra el restaurant para habilitarlo",
       });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 

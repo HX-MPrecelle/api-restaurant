@@ -6,7 +6,7 @@ const router = express.Router();
 
 //Creo un usuario
 router.post("/", async (req, res) => {
-  const { username, email, password, password2 } = req.body;
+  const { username, email, password, password2, secretword } = req.body;
 
   let errors = [];
 
@@ -34,32 +34,42 @@ router.post("/", async (req, res) => {
     if (userEmail) return res.status(400).send("Email already exist");
     //Hasheo la password para enviarla de forma segura a la DB, el segundo parametro son las vueltas de encriptación que queremos darle.
     let hashedPassword = await bcrypt.hash(password, 10);
+    let hashedSecretWord = await bcrypt.hash(secretword, 10);
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
+      secretword: hashedSecretWord
     });
     return res.status(200).send(newUser);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Restablezco contraseña
 router.put("/resetPassword", async (req, res) => {
-  const { email, password, password2 } = req.body;
+  try {
+  const { email, password, password2, secretword } = req.body;
 
-  if (!email || !password || !password2) {
-    res.status(400).json({ message: "Por favor, complete todos los campos" })
+  if (!email || !password || !password2 || secretword == undefined ) {
+    return res.status(400).json({ message: "Por favor, complete todos los campos" })
   }
 
-  try {
+
     const user = await User.findOne({
       where: {
         email,
       },
     });
     if (user) {
+      let sameWord = bcrypt.compareSync(secretword, user.secretword);
+      if (!sameWord) {
+        return res.status(400).json({
+          message: `La palabra secreta no es valida`,
+        });
+      }
+      
       if (password === password2) {
         let hashedPassword = await bcrypt.hash(password, 10)
         await user.update(
@@ -72,20 +82,20 @@ router.put("/resetPassword", async (req, res) => {
             },
           }
         );
-        res.status(200).json({
+        return res.status(200).json({
           message: `Su contraseña ha sido restablecida correctamente`,
         });
       } else {
-        res.status(400).json({ message: "Las constraseñas no coinciden" })
+        return res.status(400).json({ message: "Las constraseñas no coinciden" })
       }
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Usuario inválido",
       });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 
@@ -118,7 +128,7 @@ router.get("/:id/restaurants", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Obtengo las reviews creadas por un usuario en particular
@@ -148,7 +158,7 @@ router.get("/:id/reviews", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Elimino la reseña por su id
@@ -178,7 +188,7 @@ router.delete("/:id/reviews/:idReview", async (req, res) => {
       .json({ message: "Sólo el autor de la reseña puede eliminarla" });
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Obtengo todas las reservas realizadas por un usuario en particular
@@ -208,7 +218,7 @@ router.get("/:id/reserves", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Agrego favorito a un usuario especifico
@@ -245,22 +255,22 @@ router.put("/:id/favorites", async (req, res) => {
           },
         });
 
-        res.status(200).json({
+        return res.status(200).json({
           message: `${favName.dataValues.name} ha sido añadido a su lista de favoritos`,
         });
       } else {
-        res.status(400).json({
+        return res.status(400).json({
           message: `${favName.dataValues.name} ya existe en su lista de favoritos`,
         });
       }
     } else {
-      res
+      return res
         .status(400)
         .json({ message: "El usuario no existe o no está loggeado" });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Traigo los favoritos de un usuario específico
@@ -299,18 +309,18 @@ router.get("/:id/favorites", async (req, res) => {
         }
 
         console.log(response);
-        res.status(200).send(response);
+        return res.status(200).send(response);
       } else {
         res
           .status(400)
           .json({ message: "Aún no has agregado ningún favorito a tu lista" });
       }
     } else {
-      res.status(400).json({ message: "No se encontró el usuario por su ID" });
+      return res.status(400).json({ message: "No se encontró el usuario por su ID" });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return res.status(500).json({ message: "Ocurrió algo inesperado" })  }
 });
 
 //Elimino favorito de la lista de un usuario específico
@@ -346,11 +356,11 @@ router.delete("/:id/favorites", async (req, res) => {
           },
         });
 
-        res.status(200).json({
+        return res.status(200).json({
           message: `Has eliminado a ${favName.dataValues.name} de tu lista de favoritos`,
         });
       } else {
-        res.status(400).json({
+        return res.status(400).json({
           message:
             "No tienes ningún favorito agregado en tu lista para poder eliminar",
         });
@@ -359,10 +369,12 @@ router.delete("/:id/favorites", async (req, res) => {
       res
         .status(400)
         .json({ message: "Faltan datos para poder eliminar el favorito" });
+      return
     }
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Ocurrió algo inesperado" })  }
+    return
 });
 
 module.exports = router;
