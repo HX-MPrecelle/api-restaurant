@@ -42,7 +42,7 @@ router.put("/:id", async (req, res) => {
       .json({ message: "No se ha podido encontrar la reserva" });
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 

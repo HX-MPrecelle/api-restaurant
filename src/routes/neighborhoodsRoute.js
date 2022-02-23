@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
     return res.status(200).send(allNeighborhoods);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Ocurrió algo inesperado" });
+    return res.status(500).json({ message: "Ocurrió algo inesperado" });
   }
 });
 
